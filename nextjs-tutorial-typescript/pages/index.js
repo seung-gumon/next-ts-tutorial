@@ -7,5 +7,6 @@ export default function Home() {
         const json = await response.json()
         console.log(json);
         console.log("master git")
+        console.log("git experiment")
     })()
 }
