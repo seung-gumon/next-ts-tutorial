@@ -1,3 +1,5 @@
+import Head from 'next/head';
+import Link from 'next/link';
 
 export default function Home() {
     (
@@ -7,19 +9,39 @@ export default function Home() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ query: '{ users { name } }' }),
+                body: JSON.stringify({query: '{ users { name } }'}),
             });
+            console.log(response)
             const json = await response.json();
-            console.log( json );
+            console.log(json.data.users);
         }
     )();
 
 
     return (
-        <div className={'container'}>
-            <span>헬로</span>
+        <div className="container">
+            <Head>
+                <title>Next App With Apollo</title>
+                <link rel="icon" href="/favicon.ico"/>
+            </Head>
+
+            <main>
+                <h1 className="title">
+                    Next App With <span>Apollo</span>
+                </h1>
+
+                <Link href="/users">
+                    <p className="description">
+                        Show all users
+                    </p>
+                </Link>
+            </main>
         </div>
     )
 }
+
+
+
+
 
 
