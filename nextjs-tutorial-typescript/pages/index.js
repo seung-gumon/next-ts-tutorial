@@ -6,5 +6,6 @@ export default function Home() {
         const response = await fetch('/api/hello');
         const json = await response.json()
         console.log(json);
+        console.log("master git")
     })()
 }
