@@ -11,9 +11,8 @@ export default function Home() {
                 },
                 body: JSON.stringify({query: '{ users { name } }'}),
             });
-            console.log(response)
+
             const json = await response.json();
-            console.log(json.data.users);
         }
     )();
 
@@ -32,7 +31,7 @@ export default function Home() {
 
                 <Link href="/users">
                     <p className="description">
-                        Show all users
+                        userList
                     </p>
                 </Link>
             </main>

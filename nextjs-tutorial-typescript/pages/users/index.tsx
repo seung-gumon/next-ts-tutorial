@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import {useState} from 'react';
 import Link from 'next/link';
 import {ApolloClient, gql, InMemoryCache} from "@apollo/client";
 
@@ -8,36 +8,36 @@ const client = new ApolloClient({
     cache: new InMemoryCache(),
 });
 
-export default function Users() {
+const Users = ({}) => {
     const [users, setUsers] = useState([]);
 
-    (async function () {
-        const { loading, error, data } = await client.query({
+
+    (async () => {
+        const {loading, error, data} = await client.query({
             query: gql`
                 query users {
                     users {
-                        id
+                        _id
                         name
                         color
                     }
                 }
             `,
         });
-
-        console.log(data , 'users')
-
+        setUsers(() => data.users)
     })();
+
 
     return (
         <div className="users-page">
             <ul>
                 {
-                    users.map((user) => {
-                        const {id, name, color} = user;
+                    users?.map((user) => {
+                        const {name, color, _id} = user;
                         return (
-                            <Link href={`/users/${id}`} key={id}>
+                            <Link href={`/users/${_id}`} key={_id}>
                                 <li style={{color}}>
-                                    {`${id}. ${name}(${color})`}
+                                    {`${_id} . ${name}(${color})`}
                                 </li>
                             </Link>
                         )
@@ -47,3 +47,5 @@ export default function Users() {
         </div>
     );
 }
+
+export default Users

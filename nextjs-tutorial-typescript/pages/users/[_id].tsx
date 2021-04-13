@@ -1,12 +1,12 @@
-import { useRouter } from 'next/router';
+import {useRouter} from 'next/router';
 import {ApolloClient, InMemoryCache, gql} from '@apollo/client';
-import { useState } from 'react';
+import {useState} from 'react';
 
 
 interface IUser {
-    id : number
-    name : string
-    color : string
+    id: number
+    name: string
+    color: string
 }
 
 const client = new ApolloClient({
@@ -16,45 +16,42 @@ const client = new ApolloClient({
 
 function UserDetail() {
     const router = useRouter();
-    const [ user, setUser ] = useState<IUser>();
+    const [user, setUser] = useState<IUser>();
 
-    ( async function () {
-        const { query: { id: userId } } = router;
-        if ( !userId ) {
+    (async function () {
+        const {query: {_id: userId}} = router;
+        if (!userId) {
             return;
         }
 
 
         //this is useQuery
-        const { loading, error, data } = await client.query({
+        const {loading, error, data} = await client.query({
             query: gql`
                 query user($userId: String!) {
                     user(id: $userId) {
+                        _id
                         id
                         name
                         color
                     }
                 }
             `,
-            variables: { userId },
+            variables: {userId},
         });
-
-        console.log('data:', data);
-        setUser( data.user );
+        setUser(data.user);
     })();
-
-
 
 
     return (
         <div className="user-detail-page">
             <h1>User Detail</h1>
-            { user ?
+            {user ?
                 (
                     <>
-                        <h2>{ user.name }</h2>
-                        <p>아이디: { user.id }</p>
-                        <p>색상: { user.color }</p>
+                        <h2>{user.name}</h2>
+                        <p>아이디: {user.id}</p>
+                        <p>색상: {user.color}</p>
                     </>
                 ) : (
                     <div>Loading...</div>

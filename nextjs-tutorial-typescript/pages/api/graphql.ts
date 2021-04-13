@@ -1,15 +1,6 @@
 import {ApolloServer, gql} from 'apollo-server-micro';
 import {makeExecutableSchema} from "graphql-tools";
-import {MongoClient} from 'mongodb';
-import data from './data.json';
-import {ApolloClient, InMemoryCache} from "@apollo/client";
-
-
-
-const client = new ApolloClient({
-    uri: 'http://localhost:3000/api/graphql',
-    cache: new InMemoryCache(),
-});
+import {MongoClient, ObjectId} from 'mongodb';
 
 
 const typeDefs = gql`
@@ -18,6 +9,7 @@ const typeDefs = gql`
         user(id:String!): User!
     }
     type User {
+        _id : String
         id: String
         name: String
         color: String
@@ -25,26 +17,27 @@ const typeDefs = gql`
 `;
 
 
-
-
 const resolvers = {
-    Query :{
-        users(parent, args, context , info) {
-            console.log(context , "this is context")
-            // _context.db
-            //     .collection('users')
-            //     .find().then((callback) => {
-            //         console.log(callback , 'this is team')
-            //     })
-            return data.users
+    Query: {
+        users(_parent, _args, _context, _info) {
+            try {
+                return _context.db
+                    .collection('users')
+                    .find()
+                    .toArray()
+                    .then((data) => {
+                        return data
+                    });
+            } catch (e) {
+                console.log(`This is ${e} `)
+            }
         },
-        user(parent, args, context) {
-            // context.db
-            //     .collection('users')
-            //     .findOne({'id': args.id}).then((callback) => {
-            //         console.log(callback , 'this is solo')
-            //     })
-            return data.users
+        async user(parent, args, context) {
+            const {id} = args
+            const user = await context.db
+                .collection('users')
+                .findOne({'_id': new ObjectId(id)})
+            return user
         }
     },
 };
@@ -67,8 +60,10 @@ const apolloServer = new ApolloServer({
                     useUnifiedTopology: true,
                 });
 
-                if (!dbClient.isConnected()) await dbClient.connect();
-                db = dbClient.db('next-graphql'); // database name
+                if (!dbClient.isConnected()) {
+                    await dbClient.connect();
+                }
+                db = dbClient.db('next'); // database name
             } catch (e) {
                 console.log('--->error while connecting via graphql context (db)', e);
             }
@@ -77,6 +72,7 @@ const apolloServer = new ApolloServer({
         return {db};
     },
 });
+
 
 export const config = {
     api: {
