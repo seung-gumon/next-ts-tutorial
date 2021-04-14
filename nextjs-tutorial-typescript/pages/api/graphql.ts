@@ -17,27 +17,26 @@ const typeDefs = gql`
 `;
 
 
+interface IProps {
+    _id: String
+    id: String
+    name: String
+    color: String
+}
+
 const resolvers = {
     Query: {
-        users(_parent, _args, _context, _info) {
-            try {
-                return _context.db
-                    .collection('users')
-                    .find()
-                    .toArray()
-                    .then((data) => {
-                        return data
-                    });
-            } catch (e) {
-                console.log(`This is ${e} `)
-            }
-        },
-        async user(parent, args, context) {
-            const {id} = args
-            const user = await context.db
+        users(_parent, _args, _context, _info): Promise<IProps[]> {
+            return _context.db
                 .collection('users')
-                .findOne({'_id': new ObjectId(id)})
-            return user
+                .find()
+                .toArray()
+        },
+        user(parent, args, context) {
+            const {id} = args
+            return context.db
+                .collection('users')
+                .findOne({'_id': ObjectId(id)})
         }
     },
 };

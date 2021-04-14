@@ -38,7 +38,8 @@ function UserDetail() {
                 }
             `,
             variables: {userId},
-        });
+
+        })
         setUser(data.user);
     })();
 
